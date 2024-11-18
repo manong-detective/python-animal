@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if g.lang_code == 'zh' %}
+    <title>{{ travel.name }} 景点</title>
+{% elif g.lang_code == 'en' %}
+    <title>{{ travel.name }} Attractions </title>
+{% else %}
+    <title>{{ travel.name }} Attractions </title>
+{% endif %}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #222224;
+        }
+        h1, h2 {
+            font-family: 'Merriweather', serif;
+        }
+        .tech-purple {
+            background-color: #222224;
+        }
+        .content-bg {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .md-content p {
+            margin: 12px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="tech-purple text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold">
+                    {% if g.lang_code == 'zh' %}
+    {{ travel.name }} 景点
+{% elif g.lang_code == 'en' %}
+    {{ travel.name }} Attractions
+{% else %}
+    {{ travel.name }} Attractions
+{% endif %}
+                </h1>
+                <nav>
+                    <ul class="flex space-x-6">
+                        <li><a href="https://tourtally.ai" class="hover:text-indigo-200 transition duration-300">Home</a></li>
+                        <li><a href="/discover" class="hover:text-indigo-200 transition duration-300">Discover</a></li>
+                        <li><a href="/day-trips-from/trips" class="hover:text-indigo-200 transition duration-300">Day Trips From</a></li>
+                        <li><a href="/attraction/" class="hover:text-indigo-200 transition duration-300">Attractions</a></li>
+                        <li class="relative">
+                            <button id="language-dropdown" class="hover:text-indigo-200 transition duration-300">
+                                Language
+                                <svg class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div id="language-dropdown-menu" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20 hidden">
+                                <a href="/en/attraction/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white">English</a>
+                                <a href="/zh/attraction/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white">中文</a>
+                                <a href="/fr/attraction/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white">Français</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow bg-gray-100 py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-indigo-800 mb-6">{{ travel.name }}</h2>
+            <div class="bg-white content-bg rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-2xl font-semibold text-indigo-700 mb-3">{{ travel.name }}</h3>
+                    <div class="text-gray-700 mb-4 leading-relaxed md-content">
+                        {% autoescape false %}
+                            {{ travel.answer |md_html}}
+                        {% endautoescape %}
+                    </div>
+                    <div class="text-sm text-gray-500 mt-4">
+                        {{ travel.create_time }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="container mx-auto px-4 py-8 text-center">
+        <a href="/attraction/attractions" class="inline-block bg-indigo-600 text-white py-2 px-6 rounded-full hover:bg-indigo-700 transition duration-300">
+            Back to Attractions
+        </a>
+    </div>
+
+    <footer class="tech-purple text-white p-6 mt-12">
+        <div class="container mx-auto text-center">
+            <p class="text-lg">&copy; 2024 Travel Discovery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var currentLang = 'all';
+            var langDropdown = document.getElementById('language-dropdown');
+            var langMenu = document.getElementById('language-dropdown-menu');
+
+            function setButtonText(text) {
+                langDropdown.innerHTML = text + ' <svg class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>';
+            }
+
+            switch(currentLang) {
+                case 'en': setButtonText('English'); break;
+                case 'zh': setButtonText('中文'); break;
+                case 'fr': setButtonText('Français'); break;
+                default: setButtonText('Language');
+            }
+
+            langDropdown.addEventListener('click', function(event) {
+                event.stopPropagation();
+                langMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!langDropdown.contains(event.target) && !langMenu.contains(event.target)) {
+                    langMenu.classList.add('hidden');
+                }
+            });
+
+            var langOptions = langMenu.querySelectorAll('a');
+            langOptions.forEach(function(option) {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    setButtonText(this.textContent);
+                    langMenu.classList.add('hidden');
+                    window.location.href = this.href;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

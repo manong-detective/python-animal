@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Wheel Spinner</title>
+    <meta name="description" content="Fun animal wheel spinner - randomly select and spin animals">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <div class="container mx-auto px-4 py-12 flex-grow">
+        <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
+            <div class="p-6 bg-gradient-to-r from-blue-500 to-purple-600">
+                <h1 class="text-3xl font-bold text-white text-center">Animal Wheel Spinner</h1>
+            </div>
+
+            <div class="p-8">
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <input
+                        type="text"
+                        id="animalInput"
+                        placeholder="Enter animal name"
+                        class="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <button
+                        id="addAnimalBtn"
+                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                    >
+                        Add Animal
+                    </button>
+                </div>
+
+                <div id="animalList" class="flex flex-wrap gap-2 mb-6">
+                    <!-- Dynamic animal list will be added here -->
+                </div>
+
+                <div class="flex justify-center items-center my-8">
+                    <div
+                        id="spinWheel"
+                        class="w-64 h-64 bg-gray-200 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-300 transition"
+                    >
+                        <span class="text-2xl font-bold text-gray-700">SPIN</span>
+                    </div>
+                </div>
+
+                <div id="resultArea" class="mt-6 grid grid-cols-5 gap-4">
+                    <!-- Spin results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2023 Animal Wheel Spinner. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const animals = [
+            { name: 'Lion', image: 'https://img95.699pic.com/photo/50480/3657.jpg_wh860.jpg' },
+            { name: 'Elephant', image: 'https://pic.ntimg.cn/20130727/8786105_153843156000_2.jpg' },
+            { name: 'Giraffe', image: 'http://inews.gtimg.com/newsapp_match/0/2959235665/0' },
+            { name: 'Zebra', image: 'https://via.placeholder.com/150?text=Zebra' },
+            { name: 'Penguin', image: 'https://via.placeholder.com/150?text=Penguin' },
+            { name: 'Kangaroo', image: 'https://via.placeholder.com/150?text=Kangaroo' },
+            { name: 'Koala', image: 'https://via.placeholder.com/150?text=Koala' },
+            { name: 'Tiger', image: 'https://via.placeholder.com/150?text=Tiger' },
+            { name: 'Monkey', image: 'https://via.placeholder.com/150?text=Monkey' },
+            { name: 'Panda', image: 'https://via.placeholder.com/150?text=Panda' }
+        ];
+
+        const animalInput = document.getElementById('animalInput');
+        const addAnimalBtn = document.getElementById('addAnimalBtn');
+        const animalList = document.getElementById('animalList');
+        const spinWheel = document.getElementById('spinWheel');
+        const resultArea = document.getElementById('resultArea');
+
+        let selectedAnimals = [];
+
+        addAnimalBtn.addEventListener('click', () => {
+            const animalName = animalInput.value.trim();
+            if (animalName && selectedAnimals.length < 10 && !selectedAnimals.includes(animalName)) {
+                selectedAnimals.push(animalName);
+                updateAnimalList();
+                animalInput.value = '';
+            }
+        });
+
+        function updateAnimalList() {
+            animalList.innerHTML = selectedAnimals.map(animal => `
+                <span class="bg-blue-100 px-3 py-1 rounded-full text-sm flex items-center">
+                    ${animal}
+                    <button onclick="removeAnimal('${animal}')" class="ml-2 text-red-500">×</button>
+                </span>
+            `).join('');
+        }
+
+        window.removeAnimal = (animal) => {
+            selectedAnimals = selectedAnimals.filter(a => a !== animal);
+            updateAnimalList();
+        };
+
+        spinWheel.addEventListener('click', () => {
+            if (selectedAnimals.length > 0) {
+                const randomAnimals = _.sampleSize(animals, 5);
+                resultArea.innerHTML = randomAnimals.map(animal => `
+                    <div class="text-center">
+                        <img src="${animal.image}" alt="${animal.name}" class="mx-auto mb-2 rounded-lg">
+                        <p class="font-semibold">${animal.name}</p>
+                    </div>
+                `).join('');
+            }
+        });
+    </script>
+</body>
+</html>
